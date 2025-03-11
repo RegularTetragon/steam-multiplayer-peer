@@ -11,7 +11,7 @@
       type = "github";
       owner = "godotengine";
       repo = "godot-cpp";
-      ref = "714c9e2c165db2dcb7e6ea57e62a04204d3cfbfa";
+      ref = "f3a1a2fd458dfaf4de08c906f22a2fe9e924b16f";
     };
   };
   outputs = {self, nixpkgs, godot-cpp, ...}:
@@ -63,7 +63,8 @@
         nativeBuildInputs = with pkgs; [scons self.packages.${system}.godot-cpp self.packages.${system}.steamworks-sdk];
         buildPhase = ''
           cp -rT ${self.packages.${system}.godot-cpp} godot-cpp
-          ln -s ${self.packages.${system}.steamworks-sdk}/sdk steam-multiplayer-peer/sdk 
+          rm -rf steam-multiplayer-peer/sdk
+          ln -sT ${self.packages.${system}.steamworks-sdk}/sdk steam-multiplayer-peer/sdk 
           # note to self, figure out way to use godot-cpp package instead of compiling in place
           chmod -R 755 godot-cpp
           echo "."
@@ -74,7 +75,10 @@
           scons
         '';
         installPhase = ''
-        cp -rT . $out
+        cp -r bin/ $out
+        cp LICENSE $out
+        cp README.md $out
+        cp steam-multiplayer-peer.gdextension $out
         '';
       };
     };

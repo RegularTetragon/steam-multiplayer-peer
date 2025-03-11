@@ -3,16 +3,16 @@
     "godot-cpp": {
       "flake": false,
       "locked": {
-        "lastModified": 1741015817,
-        "narHash": "sha256-bQVrIvje9jxHLKHPBB3sBgkAS6reKnL7pPr/5lLup1k=",
+        "lastModified": 1738085337,
+        "narHash": "sha256-fB9Up9PiwgxnVi4witcm3LEbg0Z/MiRblhmEbjpI/I4=",
         "owner": "godotengine",
         "repo": "godot-cpp",
-        "rev": "714c9e2c165db2dcb7e6ea57e62a04204d3cfbfa",
+        "rev": "f3a1a2fd458dfaf4de08c906f22a2fe9e924b16f",
         "type": "github"
       },
       "original": {
         "owner": "godotengine",
-        "ref": "714c9e2c165db2dcb7e6ea57e62a04204d3cfbfa",
+        "ref": "f3a1a2fd458dfaf4de08c906f22a2fe9e924b16f",
         "repo": "godot-cpp",
         "type": "github"
       }
