@@ -36,6 +36,16 @@ Thank you Michael!
 ✔️ No dependency with GodotSteam, but demo use GodotSteam to handle connections with lobbies (See lobbies tutorial in Godot Steam [here](https://godotsteam.com/tutorials/lobbies/)).
 
 
+## Building from flake
+
+To build this using nix tooling, you first need to download the steamworks sdk and add it to the nix store:
+
+```bash
+$ nix store add ~/Downloads/steamworks_sdk_161.zip
+/nix/store/32pkda6sxfj5qfvaywpr6vbm0fdl3dnn-steamworks_sdk_161.zip
+```
+
+
 ## GodotSteam SteamMultiplayerPeer Differences
 
 | Differences | This SteamMultiplayerPeer | GodotSteam SteamMultiplayerPeer |
