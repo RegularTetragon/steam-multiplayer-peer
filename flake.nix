@@ -33,10 +33,11 @@
           target = "editor";
           platform = "linux";
           arch = "x86_64";
+          compiledb="yes";
         };
         src = godot-cpp;
         buildPhase = ''
-        scons
+        scons compiledb=yes
         '';
         installPhase = ''
         ls -a
@@ -72,13 +73,14 @@
           echo "core"
           ls -la godot-cpp/gen/include/godot_cpp/core
           ls -la steam-multiplayer-peer/sdk
-          scons
+          scons compiledb=true
         '';
         installPhase = ''
         cp -r bin/ $out
         cp LICENSE $out
         cp README.md $out
         cp steam-multiplayer-peer.gdextension $out
+        cp compile_commands.json $out
         '';
       };
     };

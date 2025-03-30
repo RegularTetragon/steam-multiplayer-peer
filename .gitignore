@@ -9,11 +9,13 @@
 **/*.VC.db
 **/*.os
 
+.cache
 .vscode/
 .sconsign.dblite
 steam-multiplayer-peer/sdk/*
 steam-multiplayer-peer/sdk/public
 steam-multiplayer-peer/sdk/redistributable_bin
+bin/linux
 compile_commands.json
 run.bat
 src/gen
