@@ -1,105 +1,58 @@
-# <img src="https://raw.githubusercontent.com/expressobits/steam-multiplayer-peer/main/icon.png" alt= “icon” width="32" height="32"> Welcome to Expresso Steam Multiplayer Peer 👋
-![Version](https://img.shields.io/badge/version-0.2.3-blue.svg?cacheSeconds=2592000)
-[![Documentation](https://img.shields.io/badge/documentation-no-red.svg)](todo-doc)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](MIT)
+# WIP
 
-Godot Asset Lib: https://godotengine.org/asset-library/asset/2258
+This fork is in heavy development. It is not in a functional state yet, please don't use it until it is ready.
 
-## Branchs Map
+# MultiplexPeer
+The intention of this is to allow you to wrap arbitrary single multiplayer peers into many local multiplayer peers, utilizing said arbitrary multiplayer peer as a gateway to the larger network.
 
-🪹[main](https://github.com/expressobits/steam-multiplayer-peer/tree/main): Contains C++ Plugin
+The motivation of this is that there are some multiplayer peer extensions which assume there is only, say, one MultiplayerPeer per Steam client.
+ENetMultiplayerPeer makes no such assumptions and I have written a game which utilizes multiple ENetMultiplayerPeers in a single scene tree to allow for simplified game logic (a peer can only be a client or a server, never both) and easy split screen multiplayer (a server peer and multiple client peers may be present in a single scene tree).
+Every existing SteamMultiplayerPeer as far as I can tell DOES make this assumption however. You can essentially only have one SteamMultiplayerPeer per Steam client. While this doesn't solve the case of having multiple windows open, it does solve both the split screen multiplayer and having entirely separate server/client logic.
 
-🪹[demo](https://github.com/expressobits/steam-multiplayer-peer/tree/demo): Same example as godot bomberman ([This](https://github.com/godotengine/godot-demo-projects/tree/master/networking/multiplayer_bomber)) But modified EnetPeer with SteamMultiplayerPeer
+This is a fork of ExpressoBit's SteamMultiplayerPeer. That said it will in a future version likely not contain any SteamMultiplayerPeer code. The intention is that this will be usable in conjunction with any other extension peer, not just SteamMultiplayerPeer.
 
-🪹[addon](https://github.com/expressobits/steam-multiplayer-peer/tree/addon): Compiled version of the libs that are in the godot asset lib store.
+This extension introduces two objects for the end user, a MultiplexNetwork, and MultiplexPeer. MultiplexNetwork is a local network that wraps another peer to act as a gateway to the larger network. The resulting network looks something like this:
 
-🪹[module](https://github.com/expressobits/steam-multiplayer-peer/tree/module): Same compiled version but just the addon folder, to be added as a git submodule
-
-## Tutorial and Learnings (How to use)
-
-See post of Michael Macha
-https://michaelmacha.wordpress.com/2024/04/08/godotsteam-and-steammultiplayerpeer/
-
-See too on youtube videos
-https://www.youtube.com/playlist?list=PLg_8mgEWE2p8ZA-AqUUJ3CYEtrRVFhl_v
-
-Thank you Michael!
-
-## Features
-
-✔️ Change easy Enet peer to Steam Peer
-
-✔️ Use Steam Sockets (Low level like enet).
-
-✔️ GDExtension (Easy to add your project)
- 
-✔️ No dependency with GodotSteam, but demo use GodotSteam to handle connections with lobbies (See lobbies tutorial in Godot Steam [here](https://godotsteam.com/tutorials/lobbies/)).
-
-
-## Building from flake
-
-To build this using nix tooling, you first need to download the steamworks sdk and add it to the nix store:
-
-```bash
-$ nix store add ~/Downloads/steamworks_sdk_161.zip
-/nix/store/32pkda6sxfj5qfvaywpr6vbm0fdl3dnn-steamworks_sdk_161.zip
+```
+MultiplexPeer (Client mpid 2) -\                                                                                                                   /- MultiplexPeer (Client mpid 4)
+MultiplexPeer (Server mpid 1) -- MultiplexNetwork - MultiplayerPeer (Server mpid 1) - Network - MultiplayerPeer (Client mpid 2) - MultiplexNetwork -- MultiplexPeer (Client mpid 5)
+MultiplexPeer (Client mpid 3) -/                                                                                                                   \- MultiplexPeer (Client mpid 6)
 ```
 
+Each side of the network must wrap the same MultiplayerPeer in a multiplex network for this to work.
 
-## GodotSteam SteamMultiplayerPeer Differences
+In terms of end user scripting, the exact interface isn't stable yet, but will end up being something akin to this
 
-| Differences | This SteamMultiplayerPeer | GodotSteam SteamMultiplayerPeer |
-|---|---|---|
-| Lib Type | GDExtension, add on your project libs to use easy. | C++ module, you need to use the precompiled <br>from godotsteam or compile it yourself |
-| Steam Connection | Steam Sockets [Steam Docs](https://partner.steamgames.com/doc/api/ISteamNetworkingSockets)<br>Steam's lowest connection level,<br>manages a connection <br>(It's very close to Enet, <br>that's why I chose this approach for the plugin) | Steam Messages [Steam Docs](https://partner.steamgames.com/doc/api/ISteamNetworkingMessages)<br>Without a connection idea,<br>the connection is managed by the lobby,<br>Need Steam lobbies. |
-| TODO  |  |  |
+```gdscript
+# starting a server
+var gateway_peer = SteamMultiplayerPeer.new()
+gateway_peer.start_server()
 
-## Known issues
+var mux_net = MultiplexNetwork.new(gateway_peer)
 
-⚠️ Features No channel support currently
-At some point I intend to integrate channels to be used in rpcs commands, but currently it is only necessary to use channel 0 or the default rpcs.
+var mux_server = MultiplexPeer.new()
+mux_server.start_server(mux_net)
+instantiate_server(mux_server)
 
-## In Progress
-
-🔨 Bugs fixes
-
-## Planneds
-
-📅 No planned features.
-
-<!-- ## Install
-See in [Wiki](https://github.com/ExpressoBits/inventory-system/wiki) -->
-
-## Authors
-
-👤 **Rafael Correa**
-* Twitter: [@ScriptsEngineer](https://twitter.com/ScriptsEngineer)
-* Github: [@scriptsengineer](https://github.com/scriptsengineer)
-
-👤 **Zennyth**
-* Github: [@Zennyth](https://github.com/Zennyth)
-
-👤 **greenfox1505**
-* Github: [@greenfox1505](https://github.com/greenfox1505)
-
-👤 **MichaelMacha**
-* Github: [@MichaelMacha](https://github.com/MichaelMacha)
+for i in range(1,split_screen_peers):
+  var mux_peer = MultiplexPeer.new() 
+  mux_peer.start_client(mux_net)
+  instantiate_client(muxpeer)
 
 
-## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!
+# starting a server
+var gateway_peer = SteamMultiplayerPeer.new()
+gateway_peer.start_client(lobby_id)
 
-Feel free to check [issues page](https://github.com/ExpressoBits/steam-multiplayer-peer/issues).
+var mux_net = MultiplexNetwork.new(gateway_peer)
 
-To suggest or discuss some project structure, feel free here [discussions page](https://github.com/expressobits/steam-multiplayer-peer/discussions)
+for i in range(1,split_screen_peers):
+  var mux_peer = MultiplexPeer.new() 
+  mux_peer.start_client(mux_net)
+  instantiate_client(mux_peer)
+```
 
+Where singleplayer is the case where split_screen_peers = 1.
 
-## Show your support
-
-Give a ⭐️ if this project helped you!
-
-
-## 📝 License
-
-This project is [MIT](MIT) licensed.
+There may be an easier way to do this in the future for SteamMultiplayerPeer in the future, however as of now it seems like this is the path of least resistance to get this particular usecase working.
