@@ -7,6 +7,7 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
+#include "multiplex_peer.h"
 #include "steam_connection.h"
 #include "steam_multiplayer_peer.h"
 #include "steam_packet_peer.h"
@@ -20,6 +21,8 @@ void initialize_steam_multiplayer_peer(ModuleInitializationLevel level) {
 		ClassDB::register_class<SteamPacketPeer>();
 		ClassDB::register_class<SteamConnection>();
 		ClassDB::register_class<SteamMultiplayerPeer>();
+    ClassDB::register_class<MultiplexPeer>();
+    ClassDB::register_class<MultiplexNetwork>();
 	}
 }
 

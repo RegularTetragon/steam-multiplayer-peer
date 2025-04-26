@@ -1,11 +1,11 @@
 #ifndef MULTIPLEX_PEER_H
 #define MULTIPLEX_PEER_H
 
+#include "godot_cpp/classes/multiplayer_peer.hpp"
+#include "multiplex_network.h"
 #include <cstdint>
 #include <godot_cpp/classes/multiplayer_peer_extension.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
-#include "godot_cpp/classes/multiplayer_peer.hpp"
-#include "multiplex_network.h"
 using namespace godot;
 
 // MultiplexPeer wraps other Peers to allow for multiple virtual connections by decorating the packets
@@ -35,17 +35,15 @@ using namespace godot;
 *   client = packed_client.instantiate()
 *   client.set_multiplayer_peer(client_multiplexing_peer.make_local_client())
 */
-class MultiplexNetwork;
 class MultiplexPeer : public MultiplayerPeerExtension {
-  GDCLASS(MultiplexPeer, MultiplayerPeerExtension)
-
+	GDCLASS(MultiplexPeer, MultiplayerPeerExtension)
 
 private:
-  enum Mode {
-    MODE_NONE,
-    MODE_SERVER,
-    MODE_CLIENT
-  };
+	enum Mode {
+		MODE_NONE,
+		MODE_SERVER,
+		MODE_CLIENT
+	};
 	Mode active_mode = MODE_NONE;
 	Ref<MultiplexNetwork> network;
 	List<Ref<MultiplexPacket>> incoming_packets;
@@ -53,8 +51,13 @@ private:
 	int32_t unique_id = 0;
 	int32_t target_peer = 0;
 	int32_t current_channel = 0;
+	int32_t max_subpeers = 0;
 	MultiplayerPeer::ConnectionStatus connection_status = CONNECTION_DISCONNECTED;
 	MultiplayerPeer::TransferMode current_transfer_mode = TRANSFER_MODE_RELIABLE;
+
+protected:
+  static void _bind_methods();
+
 public:
 	Error _put_multiplex_packet_direct(Ref<MultiplexPacket> packet);
 	Error create_server(Ref<MultiplexNetwork> network);
@@ -67,10 +70,10 @@ public:
 	int32_t _get_max_packet_size() const override;
 	// PackedByteArray _get_packet_script();
 	// Error _put_packet_script(const PackedByteArray &p_buffer);
-	int32_t _get_packet_channel() const;
-	MultiplayerPeer::TransferMode _get_packet_mode() const;
+	int32_t _get_packet_channel() const override;
+	MultiplayerPeer::TransferMode _get_packet_mode() const override;
 	void _set_transfer_channel(int32_t p_channel) override;
-	int32_t _get_transfer_channel() const;
+	int32_t _get_transfer_channel() const override;
 	void _set_transfer_mode(MultiplayerPeer::TransferMode p_mode) override;
 	MultiplayerPeer::TransferMode _get_transfer_mode() const override;
 	void _set_target_peer(int32_t p_peer) override;
@@ -84,6 +87,6 @@ public:
 	// bool _is_refusing_new_connections() const override;
 	bool _is_server_relay_supported() const override;
 	MultiplayerPeer::ConnectionStatus _get_connection_status() const override;
-
+	friend class MultiplexNetwork;
 };
 #endif

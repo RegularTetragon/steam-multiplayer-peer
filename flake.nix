@@ -73,7 +73,7 @@
           echo "core"
           ls -la godot-cpp/gen/include/godot_cpp/core
           ls -la steam-multiplayer-peer/sdk
-          scons compiledb=true
+          scons debug_symbols=yes compiledb=yes
         '';
         installPhase = ''
         cp -r bin/ $out

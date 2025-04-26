@@ -8,6 +8,8 @@
 **/*.obj
 **/*.VC.db
 **/*.os
+**/*.uid
+**/*.import
 
 .cache
 .vscode/
